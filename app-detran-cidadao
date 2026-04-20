@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detran - Sistema de Denúncias</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #eef2f3; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .container { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 450px; margin-bottom: 20px; }
+        h2 { color: #003366; text-align: center; margin-top: 0; }
+        label { display: block; margin-top: 15px; font-weight: 600; color: #444; }
+        input, select { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        .preview-box { width: 100%; height: 180px; border: 2px dashed #bbb; margin-top: 10px; display: flex; align-items: center; justify-content: center; border-radius: 6px; background: #f9f9f9; overflow: hidden; }
+        .preview-box img { width: 100%; height: 100%; object-fit: cover; }
+        button { width: 100%; background-color: #f1c40f; color: #2c3e50; border: none; padding: 14px; margin-top: 20px; font-weight: bold; cursor: pointer; border-radius: 6px; transition: 0.3s; }
+        button:hover { background-color: #d4ac0d; }
+        
+        /* Estilo da Lista de Denúncias */
+        .lista-container { width: 100%; max-width: 450px; }
+        .card { background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 5px solid #003366; display: flex; gap: 10px; align-items: center; }
+        .card img { width: 80px; height: 80px; border-radius: 4px; object-fit: cover; }
+        .card-info { flex-grow: 1; font-size: 0.9em; }
+        .card-info b { color: #003366; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Nova Denúncia</h2>
+    <form id="formDetran">
+        <label>Tipo de Infração</label>
+        <select id="tipo" required>
+            <option value="Estacionamento Irregular">Estacionamento Irregular</option>
+            <option value="Sinal Vermelho">Sinal Vermelho</option>
+            <option value="Vaga Reservada">Vaga Reservada</option>
+        </select>
+
+        <label>Placa do Veículo</label>
+        <input type="text" id="placa" placeholder="EX: ABC1D23" required>
+
+        <label>Foto da Prova</label>
+        <input type="file" id="fotoInput" accept="image/*" required>
+        <div class="preview-box" id="previewBox"><span>Sem foto selecionada</span></div>
+
+        <button type="submit">Registar Infração</button>
+    </form>
+</div>
+
+<div class="lista-container">
+    <h3>Denúncias Registadas</h3>
+    <div id="listaDenuncias">
+        </div>
+</div>
+
+<script>
+    const form = document.getElementById('formDetran');
+    const fotoInput = document.getElementById('fotoInput');
+    const previewBox = document.getElementById('previewBox');
+    const listaDiv = document.getElementById('listaDenuncias');
+
+    let fotoBase64 = ""; // Variável para guardar a imagem em formato de texto
+
+    // 1. Mostrar preview da foto
+    fotoInput.addEventListener('change', function() {
+        const file = this.files[0];
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            fotoBase64 = e.target.result; // Salva a imagem como uma string longa
+            previewBox.innerHTML = `<img src="${fotoBase64}">`;
+        };
+        reader.readAsDataURL(file);
+    });
+
+    // 2. Salvar e Listar Denúncias
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const novaDenuncia = {
+            tipo: document.getElementById('tipo').value,
+            placa: document.getElementById('placa').value,
+            foto: fotoBase64,
+            data: new Date().toLocaleString()
+        };
+
+        // Guardar no LocalStorage
+        let denuncias = JSON.parse(localStorage.getItem('denunciasDetran')) || [];
+        denuncias.push(novaDenuncia);
+        localStorage.setItem('denunciasDetran', JSON.stringify(denuncias));
+
+        form.reset();
+        previewBox.innerHTML = "<span>Sem foto selecionada</span>";
+        atualizarLista();
+    });
+
+    // 3. Função para desenhar a lista no ecrã
+    function atualizarLista() {
+        const denuncias = JSON.parse(localStorage.getItem('denunciasDetran')) || [];
+        listaDiv.innerHTML = ""; // Limpa a lista antes de redesenhar
+
+        denuncias.reverse().forEach(d => {
+            const card = `
+                <div class="card">
+                    <img src="${d.foto}">
+                    <div class="card-info">
+                        <b>${d.tipo}</b><br>
+                        Placa: ${d.placa}<br>
+                        <small>${d.data}</small>
+                    </div>
+                </div>
+            `;
+            listaDiv.innerHTML += card;
+        });
+    }
+
+    // Carregar a lista ao abrir a página
+    atualizarLista();
+</script>
+
+</body>
+</html>
