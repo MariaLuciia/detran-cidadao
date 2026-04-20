@@ -3,53 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detran - Sistema de Denúncias</title>
+    <title>Detran - Denúncia Cidadã</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #eef2f3; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .container { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 450px; margin-bottom: 20px; }
-        h2 { color: #003366; text-align: center; margin-top: 0; }
-        label { display: block; margin-top: 15px; font-weight: 600; color: #444; }
-        input, select { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
-        .preview-box { width: 100%; height: 180px; border: 2px dashed #bbb; margin-top: 10px; display: flex; align-items: center; justify-content: center; border-radius: 6px; background: #f9f9f9; overflow: hidden; }
-        .preview-box img { width: 100%; height: 100%; object-fit: cover; }
-        button { width: 100%; background-color: #f1c40f; color: #2c3e50; border: none; padding: 14px; margin-top: 20px; font-weight: bold; cursor: pointer; border-radius: 6px; transition: 0.3s; }
-        button:hover { background-color: #d4ac0d; }
+        /* Variáveis de cores para facilitar mudanças */
+        :root {
+            --primary: #003366;
+            --accent: #f1c40f;
+            --bg: #f4f7f6;
+            --danger: #e74c3c;
+        }
+
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); padding: 20px; display: flex; flex-direction: column; align-items: center; margin: 0; }
         
-        /* Estilo da Lista de Denúncias */
+        .container { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 100%; max-width: 450px; margin-bottom: 30px; border-top: 8px solid var(--primary); }
+        
+        h2 { color: var(--primary); text-align: center; margin-bottom: 20px; }
+        
+        label { display: block; margin-top: 15px; font-weight: 600; color: #555; font-size: 0.9em; }
+        
+        input, select { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 1em; transition: 0.3s; }
+        input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 5px rgba(0,51,102,0.2); }
+
+        .preview-box { width: 100%; height: 200px; border: 2px dashed #cbd5e0; margin-top: 10px; display: flex; align-items: center; justify-content: center; border-radius: 10px; background: #fdfdfd; overflow: hidden; position: relative; }
+        .preview-box img { width: 100%; height: 100%; object-fit: cover; }
+        
+        button#btnEnviar { width: 100%; background-color: var(--accent); color: #2c3e50; border: none; padding: 15px; margin-top: 25px; font-weight: bold; cursor: pointer; border-radius: 8px; font-size: 1.1em; transition: transform 0.2s, background 0.2s; }
+        button#btnEnviar:hover { background-color: #d4ac0d; transform: translateY(-2px); }
+        button#btnEnviar:active { transform: translateY(0); }
+
+        /* Lista de Denúncias Aprimorada */
         .lista-container { width: 100%; max-width: 450px; }
-        .card { background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 5px solid #003366; display: flex; gap: 10px; align-items: center; }
-        .card img { width: 80px; height: 80px; border-radius: 4px; object-fit: cover; }
-        .card-info { flex-grow: 1; font-size: 0.9em; }
-        .card-info b { color: #003366; }
+        .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; display: flex; gap: 15px; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); position: relative; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card img { width: 90px; height: 90px; border-radius: 8px; object-fit: cover; border: 1px solid #eee; }
+        .card-info { flex-grow: 1; }
+        .card-info b { color: var(--primary); font-size: 1.1em; }
+        .card-info p { margin: 4px 0; color: #666; font-size: 0.9em; }
+
+        .btn-delete { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 1.2em; padding: 5px; position: absolute; right: 15px; top: 15px; transition: 0.3s; opacity: 0.6; }
+        .btn-delete:hover { opacity: 1; transform: scale(1.1); }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Nova Denúncia</h2>
+    <h2>🚦 Denúncia Cidadã</h2>
     <form id="formDetran">
-        <label>Tipo de Infração</label>
+        <label>O que aconteceu?</label>
         <select id="tipo" required>
-            <option value="Estacionamento Irregular">Estacionamento Irregular</option>
-            <option value="Sinal Vermelho">Sinal Vermelho</option>
-            <option value="Vaga Reservada">Vaga Reservada</option>
+            <option value="Estacionamento Irregular">🚗 Estacionamento Irregular</option>
+            <option value="Sinal Vermelho">🚦 Avançou Sinal Vermelho</option>
+            <option value="Vaga Reservada">♿ Vaga Reservada (Idoso/PCD)</option>
+            <option value="Uso de Celular">📱 Celular ao Volante</option>
         </select>
 
         <label>Placa do Veículo</label>
-        <input type="text" id="placa" placeholder="EX: ABC1D23" required>
+        <input type="text" id="placa" placeholder="Ex: BRA2E19" required maxlength="8" style="text-transform: uppercase;">
 
-        <label>Foto da Prova</label>
+        <label>Foto da Infração</label>
         <input type="file" id="fotoInput" accept="image/*" required>
-        <div class="preview-box" id="previewBox"><span>Sem foto selecionada</span></div>
+        <div class="preview-box" id="previewBox">
+            <span style="color: #999; font-size: 0.9em;">A imagem aparecerá aqui</span>
+        </div>
 
-        <button type="submit">Registar Infração</button>
+        <button type="submit" id="btnEnviar">Registar Infração</button>
     </form>
 </div>
 
 <div class="lista-container">
-    <h3>Denúncias Registadas</h3>
-    <div id="listaDenuncias">
-        </div>
+    <h3 style="color: var(--primary);">Registros Recentes</h3>
+    <div id="listaDenuncias"></div>
 </div>
 
 <script>
@@ -58,61 +82,79 @@
     const previewBox = document.getElementById('previewBox');
     const listaDiv = document.getElementById('listaDenuncias');
 
-    let fotoBase64 = ""; // Variável para guardar a imagem em formato de texto
+    let fotoBase64 = "";
 
-    // 1. Mostrar preview da foto
+    // 1. Preview da Foto
     fotoInput.addEventListener('change', function() {
         const file = this.files[0];
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            fotoBase64 = e.target.result; // Salva a imagem como uma string longa
-            previewBox.innerHTML = `<img src="${fotoBase64}">`;
-        };
-        reader.readAsDataURL(file);
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                fotoBase64 = e.target.result;
+                previewBox.innerHTML = `<img src="${fotoBase64}">`;
+            };
+            reader.readAsDataURL(file);
+        }
     });
 
-    // 2. Salvar e Listar Denúncias
+    // 2. Salvar Denúncia
     form.addEventListener('submit', function(e) {
         e.preventDefault();
 
         const novaDenuncia = {
+            id: Date.now(), // Criamos um ID único usando a hora atual
             tipo: document.getElementById('tipo').value,
-            placa: document.getElementById('placa').value,
+            placa: document.getElementById('placa').value.toUpperCase(),
             foto: fotoBase64,
-            data: new Date().toLocaleString()
+            data: new Date().toLocaleString('pt-BR')
         };
 
-        // Guardar no LocalStorage
         let denuncias = JSON.parse(localStorage.getItem('denunciasDetran')) || [];
         denuncias.push(novaDenuncia);
         localStorage.setItem('denunciasDetran', JSON.stringify(denuncias));
 
         form.reset();
-        previewBox.innerHTML = "<span>Sem foto selecionada</span>";
+        previewBox.innerHTML = '<span style="color: #999; font-size: 0.9em;">A imagem aparecerá aqui</span>';
+        alert("✔️ Denúncia enviada com sucesso!");
         atualizarLista();
     });
 
-    // 3. Função para desenhar a lista no ecrã
+    // 3. Deletar Denúncia
+    function deletarDenuncia(id) {
+        if (confirm("Deseja apagar este registro?")) {
+            let denuncias = JSON.parse(localStorage.getItem('denunciasDetran')) || [];
+            denuncias = denuncias.filter(d => d.id !== id); // Remove a denúncia com o ID correspondente
+            localStorage.setItem('denunciasDetran', JSON.stringify(denuncias));
+            atualizarLista();
+        }
+    }
+
+    // 4. Mostrar Lista na Tela
     function atualizarLista() {
         const denuncias = JSON.parse(localStorage.getItem('denunciasDetran')) || [];
-        listaDiv.innerHTML = ""; // Limpa a lista antes de redesenhar
+        listaDiv.innerHTML = ""; 
+
+        if (denuncias.length === 0) {
+            listaDiv.innerHTML = "<p style='color: #999; text-align: center;'>Nenhum registro encontrado.</p>";
+            return;
+        }
 
         denuncias.reverse().forEach(d => {
             const card = `
                 <div class="card">
                     <img src="${d.foto}">
                     <div class="card-info">
-                        <b>${d.tipo}</b><br>
-                        Placa: ${d.placa}<br>
-                        <small>${d.data}</small>
+                        <b>${d.tipo}</b>
+                        <p>📍 Placa: <strong>${d.placa}</strong></p>
+                        <p>📅 ${d.data}</p>
                     </div>
+                    <button class="btn-delete" onclick="deletarDenuncia(${d.id})">🗑️</button>
                 </div>
             `;
             listaDiv.innerHTML += card;
         });
     }
 
-    // Carregar a lista ao abrir a página
     atualizarLista();
 </script>
 
